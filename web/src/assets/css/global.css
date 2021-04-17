@@ -1,0 +1,37 @@
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: url(../img/Bg.jpg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+input.el-input__inner {
+  background-color: rgba(216, 191, 216, 0.4);
+  color: antiquewhite;
+}
+
+div {
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+}
+
+.el-upload-list--text {
+  /* background-color: rgb(193, 221, 129) */
+  background-color: #fff;
+  opacity: 1;
+}
+
+.icon {
+  width: 3em;
+  height: 3em;
+  vertical-align: -1em;
+  fill: currentColor;
+  overflow: hidden;
+}
