@@ -1,25 +1,25 @@
 <template>
-    <div class="login_container">
-        <div class="login_box">
-            <!-- 头像区域 -->
-            <div class="avatar_box">
-                <img src="../assets/img/avatar.png">
-            </div>
-            <!-- 登录表单区域 -->
-            <el-form @submit.native.prevent="login" ref="loginFormRef" :model="loginForm" :rules="loginFormRules" label-width="0px" class="login_form">
-                <el-form-item prop="username">
-                    <el-input placeholder="请输入用户名"  v-model="loginForm.username" clearable prefix-icon="el-icon-user-solid"></el-input>
-                </el-form-item>
-                <el-form-item prop="password">
-                    <el-input placeholder="请输入密码"  v-model="loginForm.password" show-password clearable prefix-icon="el-icon-lock"></el-input>
-                </el-form-item>
-                <el-form-item class="btns">
-                    <el-button type="primary" round native-type="submit">登录</el-button>
-                    <el-button type="info" round @click="registerNow">立即注册</el-button>
-                </el-form-item>
-            </el-form>
-        </div>
+  <div class="login_container">
+    <div class="login_box">
+      <!-- 头像区域 -->
+      <div class="avatar_box">
+        <img src="../assets/img/avatar.png">
+      </div>
+      <!-- 登录表单区域 -->
+      <el-form @submit.prevent="login" ref="loginFormRef" :model="loginForm" :rules="loginFormRules" label-width="0px" class="login_form">
+        <el-form-item prop="username">
+          <el-input placeholder="请输入用户名"  v-model="loginForm.username" clearable prefix-icon="el-icon-user-solid"></el-input>
+        </el-form-item>
+        <el-form-item prop="password">
+          <el-input placeholder="请输入密码"  v-model="loginForm.password" show-password clearable prefix-icon="el-icon-lock"></el-input>
+        </el-form-item>
+        <el-form-item class="btns">
+          <el-button type="primary" round native-type="submit">登录</el-button>
+          <el-button type="info" round @click="registerNow">立即注册</el-button>
+        </el-form-item>
+      </el-form>
     </div>
+  </div>
 </template>
 
 <script>
@@ -53,7 +53,7 @@ export default {
     };
   },
   methods: {
-    login() {
+    login () {
       this.$refs.loginFormRef.validate((valid) => {
         if (!valid) return;
         this.$http.post("login", this.loginForm).then((res) => {
@@ -74,7 +74,7 @@ export default {
         });
       });
     },
-    registerNow() {
+    registerNow () {
       this.$router.push("/register");
     },
   },
