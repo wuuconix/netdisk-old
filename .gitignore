@@ -104,5 +104,5 @@ dist
 .tern-port
 
 #忽略server文件夹中的所有用户文件夹，但是留下太temp文件夹
-/server/files/
-!temp
+/server/files/*
+!/server/files/temp
