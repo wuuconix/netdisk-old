@@ -22,7 +22,7 @@ const routes = [
     path: '/home',
     name: 'home',
     component: home,
-    // redirect: '/all',
+    redirect: '/all',
     children: [
       { path: '/all', component: file },
       { path: '/picture', component: file },

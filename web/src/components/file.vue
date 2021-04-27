@@ -1,7 +1,7 @@
 <template>
     <el-table :data="showFile" border style="width: 100%" max-height="510" stripe :default-sort = "{prop: 'uploadtime', order: 'descending'}">
     <el-table-column prop="filename" label="文件名" min-width="50%" sortable :show-overflow-tooltip="true">
-      <template #scope>
+      <template v-slot:default='scope'>
         <svg class="icon" aria-hidden="true" v-if="imgList.indexOf(scope.row.type) != -1"><use xlink:href="#icon-picture"></use></svg>
         <svg class="icon" aria-hidden="true" v-else-if="docList.indexOf(scope.row.type) != -1"><use xlink:href="#icon-doc"></use></svg>
         <svg class="icon" aria-hidden="true" v-else-if="videoList.indexOf(scope.row.type) != -1"><use xlink:href="#icon-video"></use></svg>
@@ -14,13 +14,12 @@
     <el-table-column prop="size" label="大小" min-width="17.5%" sortable></el-table-column>
     <el-table-column prop="uploadtime" label="上传日期" min-width="17.5%" sortable></el-table-column>
     <el-table-column label="操作" min-width="15%">
-      <template #scope>
+      <template v-slot:default='scope'>
         <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
         <el-button @click="downloadFile(scope.row)" type="text" size="small">下载</el-button>
         <el-button type="text" size="small" @click="deleteFile(scope.row)">删除</el-button>
       </template>
     </el-table-column>
-    <div>2333</div>
   </el-table>
 </template>
 
@@ -33,7 +32,9 @@ export default {
     fresh () {
       this.$http.get('file').then(res => {
         this.allRawFile = res.data
+        console.log(res.data)
       })
+      return 1
     },
     formatBytes (size)
     {
@@ -80,9 +81,9 @@ export default {
       torrentList: ['torrent'],
     }
   },
-  // created () {
-  //   this.fresh()
-  // },
+  created () {
+    this.fresh()
+  },
   computed: {
     allFile () {
       var array = []
@@ -114,6 +115,7 @@ export default {
           array.push(file)
         }
       }
+      console.log(array)
       return array
     },
     allList () {
@@ -121,12 +123,12 @@ export default {
     },
     List () {  //List用来选择哪个文件列表，比如在picture页面时就需要选择imgList
       var type = String(this.$route.path).substr(1)
-      if (type == 'all') return this.allList
-      if (type == 'picture') return this.imgList
-      if (type == 'document') return this.docList
-      if (type == 'video') return this.videoList
-      if (type == 'torrent') return this.torrentList
-      if (type == 'music') return this.musicList
+      if (type === 'all') return this.allList
+      if (type === 'picture') return this.imgList
+      if (type === 'document') return this.docList
+      if (type === 'video') return this.videoList
+      if (type === 'torrent') return this.torrentList
+      if (type === 'music') return this.musicList
       return null
     }
   }
