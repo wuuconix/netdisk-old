@@ -106,3 +106,9 @@ dist
 #忽略server文件夹中的所有用户文件夹，但是留下太temp文件夹
 /server/files/*
 !/server/files/temp
+
+#忽略server文件夹中的public里preview和share文件夹中的用户文件夹
+/server/public/preview/*
+/server/public/share/*
+!/server/public/preview/README.md
+!/server/public/share/README.md

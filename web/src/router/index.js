@@ -2,7 +2,6 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import Login from '../components/Login.vue'
 import Register from '../components/Register.vue'
 import home from '../components/home.vue'
-import file from '../components/file.vue'
 const routes = [
   {
     path: '/',
@@ -24,13 +23,13 @@ const routes = [
     component: home,
     redirect: '/all',
     children: [
-      { path: '/all', component: file },
-      { path: '/picture', component: file },
-      { path: '/document', component: file },
-      { path: '/video', component: file },
-      { path: '/torrent', component: file },
-      { path: '/music', component: file },
-      { path: '/other', component: file }
+      { path: '/all', component: home },
+      { path: '/picture', component: home },
+      { path: '/document', component: home },
+      { path: '/video', component: home },
+      { path: '/torrent', component: home },
+      { path: '/music', component: home },
+      { path: '/other', component: home }
     ]
   }
 ]

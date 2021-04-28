@@ -60,6 +60,13 @@
               <el-button type="success" @click="clearFiles" v-if="buttonShow"><i class="el-icon-upload el-icon--left"></i>清空列表</el-button>
               <el-button @click="showFileList" v-if="buttonShow"><i class="el-icon-upload el-icon--left"></i>隐藏列表</el-button>
             </el-upload>
+            <el-image
+              id="preview"
+              style="width: 75px; height: 75px;"
+              :src="require('@/assets/logo.png')"
+              :preview-src-list="[url]"
+            >
+            </el-image>
           </el-header>
           <el-main class="innerMain">
             <el-table :data="showFile" border style="width: 100%" max-height="510" stripe :default-sort = "{prop: 'uploadtime', order: 'descending'}">
@@ -78,7 +85,7 @@
               <el-table-column prop="uploadtime" label="上传日期" min-width="17.5%" sortable></el-table-column>
               <el-table-column label="操作" min-width="15%">
                 <template v-slot:default='scope'>
-                  <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
+                  <el-button @click="previewFile(scope.row)" type="text" size="small">查看</el-button>
                   <el-button @click="downloadFile(scope.row)" type="text" size="small">下载</el-button>
                   <el-button type="text" size="small" @click="deleteFile(scope.row)">删除</el-button>
                 </template>
@@ -144,6 +151,7 @@ export default {
       videoList: ['mp4', 'mkv'],
       musicList: ['mp3', 'flac'],
       torrentList: ['torrent'],
+      url: "http://localhost:3000/preview/wuuconix/1.jpg",
     }
   },
   methods: {
@@ -169,9 +177,6 @@ export default {
     },
     handleExceed (files, fileList) {
       this.$message.warning(`当前限制选择 30 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
-    },
-    handleClick (row) {
-      console.log (row.size);
     },
     fresh () {
       this.$http.get('file').then(res => {
@@ -213,6 +218,14 @@ export default {
         .catch(err => {
           console.log(err)
         })
+    },
+    previewFile (row) {
+      const filename = row.filename
+      this.$http.get('preview', { params: { filename } }).then(res => {
+        this.url = res.data.url
+      })
+      const link = document.getElementById('preview');
+      link.click()
     }
   },
   computed: {

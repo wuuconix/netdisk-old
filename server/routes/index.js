@@ -1,6 +1,5 @@
 const { Console } = require('console')
 
-// 安装模块有 multer fs jsonwebtoken
 module.exports = app => {
   const express = require('express')
   const jwt = require('jsonwebtoken')
@@ -9,7 +8,6 @@ module.exports = app => {
   const router = express.Router()
   const User = require('../models/User')
   const SECRET = 'wuuconix yyds!'
-
   const auth = async (req, res, next) => { 
     // 中间件，根据token在数据库中查找对应id，然后把username加在req中供后续代码使用
     try {
@@ -40,6 +38,14 @@ module.exports = app => {
     })
     await fs.mkdir(`./files/${req.body.username}`, (err) => {   
       if (err)/* 这里的目录是根据真正的index来确定的，因为此文件的route最终被挂载到app上 */
+        message = 'something happened during mkdir in register'
+    })
+    await fs.mkdir(`./public/preview/${req.body.username}`, (err) => {   
+      if (err)  //preview文件夹
+        message = 'something happened during mkdir in register'
+    })
+    await fs.mkdir(`./public/share/${req.body.username}`, (err) => {   
+      if (err)  //share文件夹
         message = 'something happened during mkdir in register'
     })
     res.send({ message })
@@ -79,7 +85,7 @@ module.exports = app => {
     }
   )
   router.get('/download', auth, (req, res) => {
-      req.query.filename ? res.download(`./files/wuuconix/${req.query.filename}`) : res.send({
+      req.query.filename ? res.download(`./files/${req.username}/${req.query.filename}`) : res.send({
         message: 'failed to download file'
       })
   })
@@ -105,6 +111,18 @@ module.exports = app => {
     const filename = req.body.filename
     fs.unlinkSync(`./files/${req.username}/${filename}`)
     res.send({ message: 'delete ok!' })
+  })
+  router.get('/preview', auth, async (req, res) => {
+    const src = './files/' + req.username + '/' + req.query.filename //想到预览的文件
+    const dest = './public/preview/' + req.username + '/' + req.query.filename //copy到preview文件夹中
+    fs.copyFileSync(src, dest, (err) => {
+      console.log(err)
+    })
+    const url = 'http://localhost:3000/preview/' + req.username + '/' + req.query.filename;
+    setTimeout(function() {
+      fs.unlinkSync(dest) //在5秒后删除preview中文件，减少服务器硬盘负担
+    }, 5000)
+    res.send( { url } )
   })
   app.use('/api', router)
 }
