@@ -35,3 +35,7 @@ div {
   fill: currentColor;
   overflow: hidden;
 }
+
+.el-dialog__body {
+  padding: 20px 0px;
+}

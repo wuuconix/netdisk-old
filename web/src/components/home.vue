@@ -76,7 +76,6 @@
                       :src="require('@/assets/logo.png')"
                       :preview-src-list="[url_picture]">
             </el-image>
-
             <el-dialog :title="video_title"
                        v-model="dialogVideoVisible"
                        :destroy-on-close='true'>
@@ -86,6 +85,12 @@
                             :playsinline="true"
                             :options="playerOptions">
               </video-player>
+            </el-dialog>
+            <el-dialog v-model="dialogPdfVisible"
+                       :destroy-on-close='true'
+                       :fullscreen='true'
+                       :modal='true'>
+              <ViewPDF :pdfUrl="url_pdf"></ViewPDF>
             </el-dialog>
           </el-header>
           <el-main class="innerMain">
@@ -165,7 +170,11 @@
 </template>
 
 <script>
+import ViewPDF from "@/components/ViewPDF";
 export default {
+  components: {
+    ViewPDF
+  },
   data () {
     return {
       isCollapse: false,
@@ -218,9 +227,11 @@ export default {
       musicList: ['mp3', 'flac'],
       torrentList: ['torrent'],
       url_picture: "https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg",
-      url_video: "http://localhost:3000/preview/wuuconix/4.mp4",
+      url_video: "",
+      url_pdf: "http://storage.xuetangx.com/public_assets/xuetangx/PDF/PlayerAPI_v1.0.6.pdf",
       video_title: 'video-preview',
       dialogVideoVisible: false,
+      dialogPdfVisible: false,
       playerOptions: {
         playbackRates: [0.5, 1.0, 1.5, 2.0],
         autoplay: false,
@@ -322,6 +333,10 @@ export default {
           this.playerOptions.sources[0].src = res.data.url; //vue-video-player需要这样动态绑定src，直接在里面用变量不行
           this.video_title = row.filename
           this.dialogVideoVisible = true
+        }
+        else if (row.type == 'pdf') {
+          this.dialogPdfVisible = true
+          this.url_pdf = res.data.url
         }
         console.log(res.data.url)
       })

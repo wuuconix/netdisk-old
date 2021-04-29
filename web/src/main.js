@@ -16,6 +16,7 @@ import axios from 'axios'
 import VideoPlayer from 'vue-video-player/src'
 import 'vue-video-player/src/custom-theme.css'
 import 'video.js/dist/video-js.css'
+import pdf from 'pdfobject'
 
 const ip = 'localhost'
 axios.defaults.baseURL = 'http://' + ip + ':3000/api'
@@ -32,4 +33,5 @@ app.config.productionTip = false
 app.use(router)
 app.use(ElementPlus)
 app.use(VideoPlayer)
+app.use(pdf)
 app.mount('#app')

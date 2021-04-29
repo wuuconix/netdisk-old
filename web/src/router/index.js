@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import Login from '../components/Login.vue'
 import Register from '../components/Register.vue'
 import home from '../components/home.vue'
+import ViewPDF from '../components/ViewPDF.vue'
 const routes = [
   {
     path: '/',
@@ -31,6 +32,11 @@ const routes = [
       { path: '/music', component: home },
       { path: '/other', component: home }
     ]
+  },
+  {
+    path: '/pdf',
+    name: 'pdf',
+    component: ViewPDF
   }
 ]
 
