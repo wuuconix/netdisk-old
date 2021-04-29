@@ -1,36 +1,43 @@
 <template>
   <el-container class="home_container">
     <el-header class="outerHeader">
-        <div>
-          <img src="../assets/img/avatar.png">
-          <span>个人网盘系统</span>
-        </div>
-        <el-button type="info">信息按钮</el-button>
+      <div>
+        <img src="../assets/img/avatar.png">
+        <span>个人网盘系统</span>
+      </div>
+      <el-button type="info">信息按钮</el-button>
     </el-header>
     <el-container class="outerContainer">
       <el-aside :width="isCollapse ? '64px' : '200px'">
         <div class="switchDiv">
           <el-switch v-model="isCollapse"></el-switch>
         </div>
-        <el-menu background-color="#545c64" text-color="#fff"
-            active-text-color="#ffd04b" :default-openeds="['1']"
-            :collapse="isCollapse" :collapse-transition="false" router
-            :default-active='activeIndex'>
-            <el-submenu index="1">
-              <template #title>
-                <i class="el-icon-menu"></i>
-                <span>文件类型</span>
-              </template>
-              <el-menu-item-group>
-                <template #title>分组</template>
-                <el-menu-item v-for="item in menu_items" :index="item.index" :key="item.index">
-                  <template #title> <!-- 这里一定要加#title!不然会不显示 -->
-                    <i :class="item.icon"></i>
-                    <span>{{ item.title }}</span>
-                  </template>
-                </el-menu-item>
-              </el-menu-item-group>
-            </el-submenu>
+        <el-menu background-color="#545c64"
+                 text-color="#fff"
+                 active-text-color="#ffd04b"
+                 :default-openeds="['1']"
+                 :collapse="isCollapse"
+                 :collapse-transition="false"
+                 router
+                 :default-active='activeIndex'>
+          <el-submenu index="1">
+            <template #title>
+              <i class="el-icon-menu"></i>
+              <span>文件类型</span>
+            </template>
+            <el-menu-item-group>
+              <template #title>分组</template>
+              <el-menu-item v-for="item in menu_items"
+                            :index="item.index"
+                            :key="item.index">
+                <template #title>
+                  <!-- 这里一定要加#title!不然会不显示 -->
+                  <i :class="item.icon"></i>
+                  <span>{{ item.title }}</span>
+                </template>
+              </el-menu-item>
+            </el-menu-item-group>
+          </el-submenu>
         </el-menu>
       </el-aside>
       <el-main class="outerMain">
@@ -40,54 +47,113 @@
               <el-breadcrumb-item :to="{ path: '/home' }">Home</el-breadcrumb-item>
               <el-breadcrumb-item>{{String($route.path).substr(1)}}</el-breadcrumb-item>
             </el-breadcrumb>
-            <el-upload
-              class="upload-demo"
-              action="http://localhost:3000/api/upload"
-              ref="upload_demo"
-              :on-preview="handlePreview"
-              :before-upload="beforeUpload"
-              :on-remove="handleRemove"
-              :on-success="handleSuccess"
-              multiple
-              :headers="myHeaders"
-              :limit="30"
-              :on-exceed="handleExceed"
-              :file-list="fileList"
-              :show-file-list="show">
-              <template #trigger> <!-- 如果指定了一定按钮为trigger，那么剩下的按钮将不会有trigger的作用 -->
-                <el-button type="primary" class="uploadButton"><i class="el-icon-upload el-icon--left"></i>点击上传</el-button>
+            <el-upload class="upload-demo"
+                       action="http://localhost:3000/api/upload"
+                       ref="upload_demo"
+                       :on-preview="handlePreview"
+                       :before-upload="beforeUpload"
+                       :on-remove="handleRemove"
+                       :on-success="handleSuccess"
+                       multiple
+                       :headers="myHeaders"
+                       :limit="30"
+                       :on-exceed="handleExceed"
+                       :file-list="fileList"
+                       :show-file-list="show">
+              <template #trigger>
+                <!-- 如果指定了一定按钮为trigger，那么剩下的按钮将不会有trigger的作用 -->
+                <el-button type="primary"
+                           class="uploadButton"><i class="el-icon-upload el-icon--left"></i>点击上传</el-button>
               </template>
-              <el-button type="success" @click="clearFiles" v-if="buttonShow"><i class="el-icon-upload el-icon--left"></i>清空列表</el-button>
-              <el-button @click="showFileList" v-if="buttonShow"><i class="el-icon-upload el-icon--left"></i>隐藏列表</el-button>
+              <el-button type="success"
+                         @click="clearFiles"
+                         v-if="buttonShow"><i class="el-icon-upload el-icon--left"></i>清空列表</el-button>
+              <el-button @click="showFileList"
+                         v-if="buttonShow"><i class="el-icon-upload el-icon--left"></i>隐藏列表</el-button>
             </el-upload>
-            <el-image
-              id="preview"
-              style="width: 75px; height: 75px;"
-              :src="require('@/assets/logo.png')"
-              :preview-src-list="[url]"
-            >
+            <el-image id="preview-picture"
+                      style="width: 75px; height: 75px;"
+                      :src="require('@/assets/logo.png')"
+                      :preview-src-list="[url_picture]">
             </el-image>
+
+            <el-dialog :title="video_title"
+                       v-model="dialogVideoVisible"
+                       :destroy-on-close='true'>
+              <!-- 设置关闭dialog时自动删除内部元素，这样视频就不会再播放了 -->
+              <video-player class="video-player vjs-custom-skin"
+                            ref="videoPlayer"
+                            :playsinline="true"
+                            :options="playerOptions">
+              </video-player>
+            </el-dialog>
           </el-header>
           <el-main class="innerMain">
-            <el-table :data="showFile" border style="width: 100%" max-height="510" stripe :default-sort = "{prop: 'uploadtime', order: 'descending'}">
-              <el-table-column prop="filename" label="文件名" min-width="50%" sortable :show-overflow-tooltip="true">
+            <el-table :data="showFile"
+                      border
+                      style="width: 100%"
+                      max-height="510"
+                      stripe
+                      :default-sort="{prop: 'uploadtime', order: 'descending'}">
+              <el-table-column prop="filename"
+                               label="文件名"
+                               min-width="50%"
+                               sortable
+                               :show-overflow-tooltip="true">
                 <template v-slot:default='scope'>
-                  <svg class="icon" aria-hidden="true" v-if="imgList.indexOf(scope.row.type) != -1"><use xlink:href="#icon-picture"></use></svg>
-                  <svg class="icon" aria-hidden="true" v-else-if="docList.indexOf(scope.row.type) != -1"><use xlink:href="#icon-doc"></use></svg>
-                  <svg class="icon" aria-hidden="true" v-else-if="videoList.indexOf(scope.row.type) != -1"><use xlink:href="#icon-video"></use></svg>
-                  <svg class="icon" aria-hidden="true" v-else-if="torrentList.indexOf(scope.row.type) != -1"><use xlink:href="#icon-torrent"></use></svg>
-                  <svg class="icon" aria-hidden="true" v-else-if="musicList.indexOf(scope.row.type) != -1"><use xlink:href="#icon-music"></use></svg>
-                  <svg class="icon" aria-hidden="true" v-else><use xlink:href="#icon-other"></use></svg>
+                  <svg class="icon"
+                       aria-hidden="true"
+                       v-if="imgList.indexOf(scope.row.type) != -1">
+                    <use xlink:href="#icon-picture"></use>
+                  </svg>
+                  <svg class="icon"
+                       aria-hidden="true"
+                       v-else-if="docList.indexOf(scope.row.type) != -1">
+                    <use xlink:href="#icon-doc"></use>
+                  </svg>
+                  <svg class="icon"
+                       aria-hidden="true"
+                       v-else-if="videoList.indexOf(scope.row.type) != -1">
+                    <use xlink:href="#icon-video"></use>
+                  </svg>
+                  <svg class="icon"
+                       aria-hidden="true"
+                       v-else-if="torrentList.indexOf(scope.row.type) != -1">
+                    <use xlink:href="#icon-torrent"></use>
+                  </svg>
+                  <svg class="icon"
+                       aria-hidden="true"
+                       v-else-if="musicList.indexOf(scope.row.type) != -1">
+                    <use xlink:href="#icon-music"></use>
+                  </svg>
+                  <svg class="icon"
+                       aria-hidden="true"
+                       v-else>
+                    <use xlink:href="#icon-other"></use>
+                  </svg>
                   <span style="margin-left: 10px">{{ scope.row.filename }}</span>
                 </template>
               </el-table-column>
-              <el-table-column prop="size" label="大小" min-width="17.5%" sortable></el-table-column>
-              <el-table-column prop="uploadtime" label="上传日期" min-width="17.5%" sortable></el-table-column>
-              <el-table-column label="操作" min-width="15%">
+              <el-table-column prop="size"
+                               label="大小"
+                               min-width="17.5%"
+                               sortable></el-table-column>
+              <el-table-column prop="uploadtime"
+                               label="上传日期"
+                               min-width="17.5%"
+                               sortable></el-table-column>
+              <el-table-column label="操作"
+                               min-width="15%">
                 <template v-slot:default='scope'>
-                  <el-button @click="previewFile(scope.row)" type="text" size="small">查看</el-button>
-                  <el-button @click="downloadFile(scope.row)" type="text" size="small">下载</el-button>
-                  <el-button type="text" size="small" @click="deleteFile(scope.row)">删除</el-button>
+                  <el-button @click="previewFile(scope.row)"
+                             type="text"
+                             size="small">查看</el-button>
+                  <el-button @click="downloadFile(scope.row)"
+                             type="text"
+                             size="small">下载</el-button>
+                  <el-button type="text"
+                             size="small"
+                             @click="deleteFile(scope.row)">删除</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -151,7 +217,33 @@ export default {
       videoList: ['mp4', 'mkv'],
       musicList: ['mp3', 'flac'],
       torrentList: ['torrent'],
-      url: "http://localhost:3000/preview/wuuconix/1.jpg",
+      url_picture: "https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg",
+      url_video: "http://localhost:3000/preview/wuuconix/4.mp4",
+      video_title: 'video-preview',
+      dialogVideoVisible: false,
+      playerOptions: {
+        playbackRates: [0.5, 1.0, 1.5, 2.0],
+        autoplay: false,
+        muted: false,
+        loop: false,
+        preload: 'auto',
+        language: 'zh-CN',
+        aspectRatio: '16:9',
+        fluid: true,
+        sources: [{
+          type: "video/mp4",
+          src: ''
+        }],
+        poster: '',
+        notSupportedMessage: '此视频暂无法播放，请稍后再试',
+        controlBar: {
+          timeDivider: true,
+          durationDisplay: true,
+          remainingTimeDisplay: false,
+          //全屏按钮
+          fullscreenToggle: true
+        }
+      }
     }
   },
   methods: {
@@ -185,8 +277,7 @@ export default {
       })
       return 1
     },
-    formatBytes (size)
-    {
+    formatBytes (size) {
       var units = [' B', ' KB', ' MB', ' GB', ' TB']
       for (var i = 0; size >= 1024 && i < 4; i++)
         size /= 1024;
@@ -222,10 +313,18 @@ export default {
     previewFile (row) {
       const filename = row.filename
       this.$http.get('preview', { params: { filename } }).then(res => {
-        this.url = res.data.url
+        if (row.type == 'jpg' || row.type == 'png') {
+          this.url_picture = res.data.url
+          const link = document.getElementById('preview-picture');
+          link.click()
+        }
+        else if (row.type == 'mp4') {
+          this.playerOptions.sources[0].src = res.data.url; //vue-video-player需要这样动态绑定src，直接在里面用变量不行
+          this.video_title = row.filename
+          this.dialogVideoVisible = true
+        }
+        console.log(res.data.url)
       })
-      const link = document.getElementById('preview');
-      link.click()
     }
   },
   computed: {
@@ -294,55 +393,55 @@ export default {
 
 <style>
 .Bg_Leaf {
-    background: url("../assets/img/Bg_Leaf.jpg");
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
+  background: url("../assets/img/Bg_Leaf.jpg");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
 }
 </style>
 <style lang="less" scoped>
 .home_container {
-    height: 100%;
-    overflow-y: hidden;
+  height: 100%;
+  overflow-y: hidden;
 }
 .outerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: seashell;
+  > div {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    color: seashell;
-    > div {
-      display: flex;
-      align-items: center;
-      img {
-        width: 60px;
-        border-radius: 50%;
-      }
-      span {
-        margin-left: 15px;
-      }
+    img {
+      width: 60px;
+      border-radius: 50%;
     }
+    span {
+      margin-left: 15px;
+    }
+  }
 }
 .el-aside {
-    overflow-x: hidden;
-    .el-menu {
-      width: 100%;
-    }
-    .switchDiv {
+  overflow-x: hidden;
+  .el-menu {
+    width: 100%;
+  }
+  .switchDiv {
     background-color: rgb(84, 92, 100);
     height: 35px;
     display: flex;
     justify-content: center;
     align-content: center;
     align-items: center;
-    }
+  }
 }
 .outerMain {
-    width: 100%;
-    background-color: rgba(255, 245, 238, 0.9);
-    .innerContainer {
-      display: flex;
-      height: 100%;
-      flex-direction: column;
-      justify-content: flex-start;
+  width: 100%;
+  background-color: rgba(255, 245, 238, 0.9);
+  .innerContainer {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    justify-content: flex-start;
     .innerHeader {
       width: 100%;
       display: flex;
@@ -354,7 +453,7 @@ export default {
         position: relative;
         z-index: 999;
         .uploadButton {
-            margin-right: 10px;
+          margin-right: 10px;
         }
       }
     }
