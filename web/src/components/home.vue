@@ -48,7 +48,7 @@
               <el-breadcrumb-item>{{String($route.path).substr(1)}}</el-breadcrumb-item>
             </el-breadcrumb>
             <el-upload class="upload-demo"
-                       action="http://localhost:3000/api/upload"
+                       :action="uplaod_action"
                        ref="upload_demo"
                        :on-preview="handlePreview"
                        :before-upload="beforeUpload"
@@ -76,22 +76,6 @@
                       :src="require('@/assets/logo.png')"
                       :preview-src-list="[url_picture]">
             </el-image>
-            <el-dialog :title="video_title"
-                       v-model="dialogVideoVisible"
-                       :destroy-on-close='true'>
-              <!-- 设置关闭dialog时自动删除内部元素，这样视频就不会再播放了 -->
-              <video-player class="video-player vjs-custom-skin"
-                            ref="videoPlayer"
-                            :playsinline="true"
-                            :options="playerOptions">
-              </video-player>
-            </el-dialog>
-            <el-dialog v-model="dialogPdfVisible"
-                       :destroy-on-close='true'
-                       :fullscreen='true'
-                       :modal='true'>
-              <ViewPDF :pdfUrl="url_pdf"></ViewPDF>
-            </el-dialog>
           </el-header>
           <el-main class="innerMain">
             <el-table :data="showFile"
@@ -156,27 +140,74 @@
                   <el-button @click="downloadFile(scope.row)"
                              type="text"
                              size="small">下载</el-button>
-                  <el-button type="text"
-                             size="small"
-                             @click="deleteFile(scope.row)">删除</el-button>
+                  <el-button @click="shareFile(scope.row)"
+                             type="text"
+                             size="small">分享</el-button>
+                  <el-button @click="deleteFile(scope.row)"
+                             type="text"
+                             size="small">删除</el-button>
                 </template>
               </el-table-column>
             </el-table>
           </el-main>
+          <el-footer>
+            <!-- 存一些dialog，防止破坏布局 -->
+            <el-dialog :title="video_title"
+                       v-model="dialogVideoVisible"
+                       :destroy-on-close='true'>
+              <!-- 设置关闭dialog时自动删除内部元素，这样视频就不会再播放了 -->
+              <video-player class="video-player vjs-custom-skin"
+                            ref="videoPlayer"
+                            :playsinline="true"
+                            :options="playerOptions">
+              </video-player>
+            </el-dialog>
+            <div class="div_pdf"
+                 style="display:fixed">
+              <!-- 套一层div为给不同dialog写不同的css做做准备 -->
+              <el-dialog v-model="dialogPdfVisible"
+                         :destroy-on-close='true'
+                         :fullscreen='true'
+                         :modal='true'>
+                <ViewPDF :pdfUrl="url_pdf"></ViewPDF>
+              </el-dialog>
+            </div>
+            <div class="div_music">
+              <el-dialog :title="music_title"
+                         v-model="dialogAudioVisible"
+                         :destroy-on-close='true'
+                         center>
+                <audio :src="url_music"
+                       type="audio/mpeg"
+                       controls="controls">
+                </audio>
+              </el-dialog>
+              <el-dialog title="共享链接"
+                         v-model="dialogShareVisible"
+                         :destroy-on-close='true'
+                         center>
+                <!-- 设置关闭dialog时自动删除内部元素，这样视频就不会再播放了 -->
+                <p>{{ url_share }}</p>
+              </el-dialog>
+            </div>
+          </el-footer>
         </el-container>
       </el-main>
     </el-container>
   </el-container>
+
 </template>
 
 <script>
 import ViewPDF from "@/components/ViewPDF";
+
 export default {
   components: {
-    ViewPDF
+    ViewPDF,
   },
   data () {
     return {
+      ip: '10.245.143.5',
       isCollapse: false,
       menu_items: [
         {
@@ -222,16 +253,21 @@ export default {
       buttonShow: false,
       allRawFile: [],
       imgList: ['png', 'jpg', 'jpeg', 'bmp'],
-      docList: ['docx', 'pptx', 'doc', 'ppt', 'txt', 'md', 'xlsx', 'xls'],
+      docList: ['docx', 'pptx', 'doc', 'ppt', 'txt', 'md', 'xlsx', 'xls', 'pdf'],
       videoList: ['mp4', 'mkv'],
       musicList: ['mp3', 'flac'],
       torrentList: ['torrent'],
       url_picture: "https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg",
       url_video: "",
       url_pdf: "http://storage.xuetangx.com/public_assets/xuetangx/PDF/PlayerAPI_v1.0.6.pdf",
+      url_share: "",
+      url_music: "",
       video_title: 'video-preview',
+      music_title: 'music_preview',
       dialogVideoVisible: false,
       dialogPdfVisible: false,
+      dialogAudioVisible: false,
+      dialogShareVisible: false,
       playerOptions: {
         playbackRates: [0.5, 1.0, 1.5, 2.0],
         autoplay: false,
@@ -254,7 +290,7 @@ export default {
           //全屏按钮
           fullscreenToggle: true
         }
-      }
+      },
     }
   },
   methods: {
@@ -338,11 +374,26 @@ export default {
           this.dialogPdfVisible = true
           this.url_pdf = res.data.url
         }
+        else if (row.type == 'mp3') {
+          this.dialogAudioVisible = true
+          this.url_music = res.data.url
+        }
+        console.log(res.data.url)
+      })
+    },
+    shareFile (row) {
+      const filename = row.filename
+      this.$http.get('share', { params: { filename } }).then(res => {
+        this.url_share = res.data.url
+        this.dialogShareVisible = true
         console.log(res.data.url)
       })
     }
   },
   computed: {
+    uplaod_action () {
+      return "http://" + this.ip + ":3000/api/upload"
+    },
     allFile () {
       var array = []
       for (var i = 0; i < this.allRawFile.length; i++) {
@@ -415,8 +466,8 @@ export default {
 </style>
 <style lang="less" scoped>
 .home_container {
-  height: 100%;
-  overflow-y: hidden;
+  height: 1080px;
+  // overflow-y: hidden;
 }
 .outerHeader {
   display: flex;

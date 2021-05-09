@@ -13,6 +13,8 @@
     "element-plus": "*",
     "pdfobject": "^2.2.5",
     "vue": "^3.0.0",
+    "vue-aplayer": "^1.6.1",
+    "vue-audio-visual": "^2.2.2",
     "vue-pdf": "^4.2.0",
     "vue-router": "^4.0.0-0",
     "vue-video-player": "^5.0.2"

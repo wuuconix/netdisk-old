@@ -1,5 +1,5 @@
 const { Console } = require('console')
-
+const ip = '10.245.143.5'
 module.exports = app => {
   const express = require('express')
   const jwt = require('jsonwebtoken')
@@ -80,6 +80,7 @@ module.exports = app => {
   router.post('/upload', multer({ dest: './files/temp' }).single('file'), auth,
     async (req, res) => {
       var file = req.file
+      console.log(req.file)
       await fs.renameSync(file.path, `./files/${req.username}/${file.originalname}`)
       res.send({ file: file, message: 'ok' })
       return  //结束这次router.post
@@ -121,7 +122,22 @@ module.exports = app => {
     fs.copyFileSync(src, dest, (err) => {
       console.log(err)
     })
-    const url = 'http://localhost:3000/preview/' + req.username + '/' + md5_filename + '.' + type;
+    const url = 'http://' + ip + ':3000/preview/' + req.username + '/' + md5_filename + '.' + type;
+    // setTimeout(function() {
+    //   fs.unlinkSync(dest) //在5秒后删除preview中文件，减少服务器硬盘负担
+    // }, 5000)
+    console.log(url)
+    res.send({ url })
+  })
+  router.get('/share', auth, async (req, res) => {
+    const src = './files/' + req.username + '/' + req.query.filename //想到预览的文件
+    var md5_filename = String(md5(req.query.filename))
+    const type = req.query.filename.split('.').pop()  //filename包含后缀，如果直接把filename加密，将失去后缀，我们需要手动加后缀
+    const dest = './public/share/' + req.username + '/' + md5_filename + '.' + type //copy到preview文件夹中，并且将文件名进行md5加密，防止特殊字符的干扰
+    fs.copyFileSync(src, dest, (err) => {
+      console.log(err)
+    })
+    const url = 'http://' + ip + ':3000/share/' + req.username + '/' + md5_filename + '.' + type;
     // setTimeout(function() {
     //   fs.unlinkSync(dest) //在5秒后删除preview中文件，减少服务器硬盘负担
     // }, 5000)

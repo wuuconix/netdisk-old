@@ -36,6 +36,13 @@ div {
   overflow: hidden;
 }
 
-.el-dialog__body {
+.div_pdf .el-dialog__body {
   padding: 20px 0px;
+
+}
+
+.div_music .el-dialog__body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
