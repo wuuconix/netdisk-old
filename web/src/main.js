@@ -17,9 +17,8 @@ import VideoPlayer from 'vue-video-player/src'
 import 'vue-video-player/src/custom-theme.css'
 import 'video.js/dist/video-js.css'
 import pdf from 'pdfobject'
-import AudioVisual from 'vue-audio-visual'
 
-const ip = '10.245.143.5'
+const ip = '10.241.67.93'
 axios.defaults.baseURL = 'http://' + ip + ':3000/api'
 axios.interceptors.request.use(config => {
   config.headers.authorization = window.sessionStorage.getItem('token')
@@ -34,5 +33,4 @@ app.use(router)
 app.use(ElementPlus)
 app.use(VideoPlayer)
 app.use(pdf)
-app.use(AudioVisual)
 app.mount('#app')

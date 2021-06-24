@@ -188,6 +188,8 @@
                          center>
                 <!-- 设置关闭dialog时自动删除内部元素，这样视频就不会再播放了 -->
                 <p>{{ url_share }}</p>
+                <el-button type="text"
+                           @click="copy">点击复制链接</el-button>
               </el-dialog>
             </div>
           </el-footer>
@@ -207,7 +209,7 @@ export default {
   },
   data () {
     return {
-      ip: '10.245.143.5',
+      ip: '10.241.67.93',
       isCollapse: false,
       menu_items: [
         {
@@ -376,6 +378,7 @@ export default {
         }
         else if (row.type == 'mp3') {
           this.dialogAudioVisible = true
+          this.music_title = row.filename
           this.url_music = res.data.url
         }
         console.log(res.data.url)
@@ -388,6 +391,16 @@ export default {
         this.dialogShareVisible = true
         console.log(res.data.url)
       })
+    },
+    copy () {
+      var tag = document.createElement('input')
+      tag.setAttribute('id', 'cp_input');
+      tag.value = this.url_share
+      document.getElementsByTagName('body')[0].appendChild(tag);
+      document.getElementById('cp_input').select()
+      document.execCommand('copy')
+      document.getElementById('cp_input').remove()
+      this.$message.success("复制成功，快向朋友分享吧！")
     }
   },
   computed: {

@@ -1,5 +1,5 @@
 const { Console } = require('console')
-const ip = '10.245.143.5'
+const ip = '10.241.67.93'
 module.exports = app => {
   const express = require('express')
   const jwt = require('jsonwebtoken')
@@ -8,7 +8,7 @@ module.exports = app => {
   const router = express.Router()
   const User = require('../models/User')
   const SECRET = 'wuuconix yyds!'
-  const md5 = require('md5'); //直接用md5库，玛德crypto库简直是智障，只能加密一次，第二次加密就报错
+  const md5 = require('md5'); //直接用md5库，crypto库，只能加密一次，第二次加密就报错
   auth = async (req, res, next) => {
     // 中间件，根据token在数据库中查找对应id，然后把username加在req中供后续代码使用
     try {

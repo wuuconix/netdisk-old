@@ -15,6 +15,7 @@
     "vue": "^3.0.0",
     "vue-aplayer": "^1.6.1",
     "vue-audio-visual": "^2.2.2",
+    "vue-clipboard2": "^0.3.1",
     "vue-pdf": "^4.2.0",
     "vue-router": "^4.0.0-0",
     "vue-video-player": "^5.0.2"
