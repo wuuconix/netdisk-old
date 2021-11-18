@@ -10,7 +10,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
-    "element-plus": "*",
+    "element-plus": "^1.2.0-beta.3",
     "pdfobject": "^2.2.5",
     "vue": "^3.0.0",
     "vue-aplayer": "^1.6.1",

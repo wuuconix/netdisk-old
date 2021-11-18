@@ -5,7 +5,7 @@
         <img src="../assets/img/avatar.png">
         <span>个人网盘系统</span>
       </div>
-      <el-button type="info">信息按钮</el-button>
+      <el-button type="info" @click="logOut">退出登录</el-button>
     </el-header>
     <el-container class="outerContainer">
       <el-aside :width="isCollapse ? '64px' : '200px'">
@@ -209,7 +209,6 @@ export default {
   },
   data () {
     return {
-      ip: '10.241.67.93',
       isCollapse: false,
       menu_items: [
         {
@@ -257,7 +256,7 @@ export default {
       imgList: ['png', 'jpg', 'jpeg', 'bmp'],
       docList: ['docx', 'pptx', 'doc', 'ppt', 'txt', 'md', 'xlsx', 'xls', 'pdf'],
       videoList: ['mp4', 'mkv'],
-      musicList: ['mp3', 'flac'],
+      musicList: ['mp3', 'flac', 'm4a'],
       torrentList: ['torrent'],
       url_picture: "https://fuss10.elemecdn.com/8/27/f01c15bb73e1ef3793e64e6b7bbccjpeg.jpeg",
       url_video: "",
@@ -363,23 +362,23 @@ export default {
       const filename = row.filename
       this.$http.get('preview', { params: { filename } }).then(res => {
         if (row.type == 'jpg' || row.type == 'png') {
-          this.url_picture = res.data.url
+          this.url_picture = this.$baseURLNoapi + res.data.url
           const link = document.getElementById('preview-picture');
           link.click()
         }
         else if (row.type == 'mp4') {
-          this.playerOptions.sources[0].src = res.data.url; //vue-video-player需要这样动态绑定src，直接在里面用变量不行
+          this.playerOptions.sources[0].src = this.$baseURLNoapi + res.data.url; //vue-video-player需要这样动态绑定src，直接在里面用变量不行
           this.video_title = row.filename
           this.dialogVideoVisible = true
         }
         else if (row.type == 'pdf') {
           this.dialogPdfVisible = true
-          this.url_pdf = res.data.url
+          this.url_pdf = this.$baseURLNoapi + res.data.url
         }
         else if (row.type == 'mp3') {
           this.dialogAudioVisible = true
           this.music_title = row.filename
-          this.url_music = res.data.url
+          this.url_music = this.$baseURLNoapi + res.data.url
         }
         console.log(res.data.url)
       })
@@ -387,7 +386,7 @@ export default {
     shareFile (row) {
       const filename = row.filename
       this.$http.get('share', { params: { filename } }).then(res => {
-        this.url_share = res.data.url
+        this.url_share = this.$baseURLNoapi + res.data.url
         this.dialogShareVisible = true
         console.log(res.data.url)
       })
@@ -401,11 +400,14 @@ export default {
       document.execCommand('copy')
       document.getElementById('cp_input').remove()
       this.$message.success("复制成功，快向朋友分享吧！")
+    },
+    logOut () {
+      this.$router.push("/login")
     }
   },
   computed: {
     uplaod_action () {
-      return "http://" + this.ip + ":3000/api/upload"
+      return this.$http.defaults.baseURL + "/upload"
     },
     allFile () {
       var array = []
